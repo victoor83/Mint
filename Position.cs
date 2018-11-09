@@ -13,8 +13,8 @@ namespace MintApp
 
         public Position(int width, int height)
         {
-            width = Width;
-            height = Height;
+            Width = width;
+            Height = height;
         }
     }
 }
