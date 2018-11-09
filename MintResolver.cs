@@ -19,7 +19,7 @@ namespace MintApp
 
         public void Resolve()
         {
-
+            Position startPosition = GetStartPoint();
         }
 
         public void Print()
@@ -35,6 +35,19 @@ namespace MintApp
             _mintArray = File.ReadAllLines(_mintPath);
 
         }
+
+        /// <summary>
+        /// left down edge
+        /// </summary>
+        private Position GetStartPoint()
+        {
+            int width = 1;
+            int height = _mintArray.Length - 2;
+
+            return new Position(width, height);
+        }
+
+
 
 
     }
