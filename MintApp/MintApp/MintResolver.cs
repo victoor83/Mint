@@ -20,19 +20,24 @@ namespace MintApp
 
         public void Resolve()
         {
-            Position startPosition = GetStartPoint();
+            Position currentPosition = GetStartPoint();
 
-            bool isEmptyStart = IsLocationEmpty(startPosition);
+            bool isEmptyStart = IsLocationEmpty(currentPosition);
             Direction currentDirection = Direction.Right;
 
             int moveCounter = 0;
 
             while (true)
             {
-                bool wasMovePossible = Move(currentDirection, ref startPosition);
+
+                bool wasMovePossible = Move(currentDirection, ref currentPosition);
+
+                if(currentPosition == GetFinishPoint())
+                    return;
+
                 if(!wasMovePossible)
                 {
-                    ChangeDirection(ref currentDirection, startPosition);
+                    ChangeDirection(ref currentDirection, currentPosition);
                     moveCounter++;
                 }
 
@@ -162,6 +167,11 @@ namespace MintApp
             int height = _mintArray.Length - 2;
 
             return new Position(width, height);
+        }
+
+        private Position GetFinishPoint()
+        {
+           return new Position(_mintArray[0].Length - 2, 1);
         }
 
         private bool IsLocationEmpty(Position position)
