@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MintApp
 {
-    class Position
+    struct Position
     {
         public int Width{ get; set; }
         public int Height { get; set; }
@@ -15,6 +15,18 @@ namespace MintApp
         {
             Width = width;
             Height = height;
+        }
+
+        public static bool operator== (Position a, Position b)
+        {
+            if(a.Height == b.Height && a.Width == b.Width)
+                return true;
+            return false;
+        }
+
+        public static bool operator !=(Position a, Position b)
+        {
+            return !(a == b);
         }
     }
 }

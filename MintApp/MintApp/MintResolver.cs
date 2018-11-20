@@ -15,6 +15,7 @@ namespace MintApp
         private List<Position> _visitedPositions = new List<Position>();
         private Direction _lastDirection;
         private Direction _currentDirection;
+        private int _moveCounter = 0;
         public MintResolver(string path)
         {
             _mintPath = path;
@@ -27,7 +28,6 @@ namespace MintApp
 
             _currentDirection = Direction.Right;
 
-            int moveCounter = 0;
 
             while (true)
             {
@@ -40,11 +40,19 @@ namespace MintApp
                 if(!wasMovePossible)
                 {
                     ChangeDirection(currentPosition);
-                    moveCounter++;
+                } else
+                {
+                    _moveCounter++;
+                    //Console.Write($"{ _moveCounter}.");
+                }
+
+                if (_moveCounter == 19)
+                {
+
                 }
 
                 //temporary to test
-                if(moveCounter > 20)
+                if (_moveCounter > 200)
                     return;
             }
         }
@@ -209,18 +217,23 @@ namespace MintApp
             {
                 case Direction.Left:
                     
-                    if(PositionAlreadyVisited(currentPosition) && _lastDirection != Direction.Down)
+                    if(PositionAlreadyVisited(currentPosition) &&
+                        _lastDirection != Direction.Down)
                     {        
                         var positionUp =GetNextPosition(Direction.Up, currentPosition);
                         if(IsLocationEmpty(positionUp))
                         {
-                            currentPosition = positionUp;
-                            directionSymbol = "^";
-                            Console.Write(directionSymbol);
-                            _lastDirection = Direction.Left;
-                            _currentDirection = Direction.Up;
-                            _visitedPositions.Add(currentPosition);
-                            return true;
+                            if(PositionAlreadyVisited(GetNextPosition(Direction.Left, currentPosition)))
+                            {
+                                currentPosition = positionUp;
+                                directionSymbol = "^";
+                                Console.Write(directionSymbol);
+                                _lastDirection = Direction.Left;
+                                _currentDirection = Direction.Up;
+                                _visitedPositions.Add(currentPosition);
+                                return true;
+                            }
+
                         }
                     } 
                     
@@ -275,6 +288,7 @@ namespace MintApp
                 case Direction.Right:
                     return new Position(currentPosition.Width + 1, currentPosition.Height);  
                 case Direction.Up:
+
                     return new Position(currentPosition.Width, currentPosition.Height - 1);
                 case Direction.Down:
                     return new Position(currentPosition.Width, currentPosition.Height + 1);
