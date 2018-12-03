@@ -46,7 +46,7 @@ namespace MintApp
                     //Console.Write($"{ _moveCounter}.");
                 }
 
-                if (_moveCounter == 19)
+                if (_moveCounter == 100)
                 {
 
                 }
@@ -90,16 +90,17 @@ namespace MintApp
                     {
                         _currentDirection = Direction.Up;         
                     }
-                    //Try to go left
-                    else if (IsLocationEmpty(GetNextPosition(Direction.Left, currentPosition)))
-                    {
-                        _currentDirection = Direction.Left;     
-                    }
                     //Try to go down
                     else if (IsLocationEmpty(GetNextPosition(Direction.Down, currentPosition)))
                     {
                         _currentDirection = Direction.Down;
-                    } else
+                    }
+                    //Try to go left
+                    else if (IsLocationEmpty(GetNextPosition(Direction.Left, currentPosition)))
+                    {
+                        _currentDirection = Direction.Left;     
+                    }                
+                    else
                     {
                         throw new Exception("No move possible");
                     }
