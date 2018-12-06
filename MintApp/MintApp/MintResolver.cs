@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MintApp
 {
@@ -12,7 +9,7 @@ namespace MintApp
     {
         private string _mintPath;
         private string[] _mintArray;
-        private List<Position> _visitedPositions = new List<Position>();
+        private List<VisitedPosition> _visitedPositions = new List<VisitedPosition>();
         private Direction _lastDirection;
         private Direction _currentDirection;
         private int _moveCounter = 0;
@@ -35,7 +32,10 @@ namespace MintApp
                 bool wasMovePossible = Move(ref currentPosition);
 
                 if(currentPosition == GetFinishPoint())
+                {
+                    Console.WriteLine("YEAHH!!");
                     return;
+                }
 
                 if(!wasMovePossible)
                 {
@@ -231,7 +231,7 @@ namespace MintApp
                                 Console.Write(directionSymbol);
                                 _lastDirection = Direction.Left;
                                 _currentDirection = Direction.Up;
-                                _visitedPositions.Add(currentPosition);
+                                _visitedPositions.Add(new VisitedPosition(currentPosition, _currentDirection));
                                 return true;
                             }
 
@@ -263,7 +263,7 @@ namespace MintApp
 
 
             currentPosition = newPosition;
-            _visitedPositions.Add(currentPosition);
+            _visitedPositions.Add(new VisitedPosition(currentPosition, _currentDirection));
             _lastDirection = _currentDirection;
 
             Console.Write(directionSymbol);
@@ -271,9 +271,10 @@ namespace MintApp
             return true;
         }
 
+
         private bool PositionAlreadyVisited(Position position)
         {
-            if(_visitedPositions.Contains(position))
+            if(_visitedPositions.Any(x => x.GetPosition() == position))
                 return true;
 
             return false;
