@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MintApp
 {
@@ -19,7 +20,7 @@ namespace MintApp
             ReadMint();
         }
 
-        public void Resolve()
+        public void Resolve(ITextOutput outputWriter)
         {
             Position currentPosition = GetStartPoint();
 
@@ -33,8 +34,8 @@ namespace MintApp
 
                 if(currentPosition == GetFinishPoint())
                 {
-                    Console.WriteLine("YEAHH!!");
-                    return;
+                    outputWriter.WriteLine("YEAH");
+                    break;
                 }
 
                 if(!wasMovePossible)
@@ -43,18 +44,54 @@ namespace MintApp
                 } else
                 {
                     _moveCounter++;
-                    //Console.Write($"{ _moveCounter}.");
                 }
 
+                #region Debug
                 if (_moveCounter == 100)
                 {
 
                 }
 
                 //temporary to test
-                if (_moveCounter > 200)
-                    return;
+                if(_moveCounter > 300)
+                    break;
+                #endregion
             }
+
+            PrintPath(PathType.Orginal, outputWriter);
+            //PrintPath(PathType.Optimized, outputWriter);
+        }
+
+        private void PrintPath(PathType pathType, ITextOutput outputWriter)
+        {
+            outputWriter.WriteLine("");
+            outputWriter.WriteLine("");
+
+
+            var path = pathType == PathType.Optimized ? GetListWithRemovedMultipleVisitedLocations() : _visitedPositions;
+
+            foreach (var step in path)
+            {
+                outputWriter.Write(GetStepSymbol(step.GetDirection()));
+            }
+
+            if (_visitedPositions[_visitedPositions.Count - 1].GetPosition() == GetFinishPoint())
+            {
+               outputWriter.WriteLine("YEAHH!!");
+            }
+        }
+
+        private List<VisitedPosition> GetListWithRemovedMultipleVisitedLocations()
+        {
+            List<VisitedPosition> listNoDuplicates = new List<VisitedPosition>();
+            foreach (var element in _visitedPositions)
+            {
+                int count = _visitedPositions.Count(x => x.GetPosition() == element.GetPosition());
+                if(count == 1)
+                    listNoDuplicates.Add(element);
+            }
+
+            return listNoDuplicates;
         }
 
         public void Print()
@@ -78,6 +115,25 @@ namespace MintApp
 
             Console.WriteLine();
             Console.WriteLine();
+        }
+
+        private string GetStepSymbol(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Left:
+                    return "<";
+                case Direction.Right:
+                    return ">";
+                    break;
+                case Direction.Up:
+                    return "^";
+                    break;
+                case Direction.Down:
+                    return "v"; 
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            }
         }
 
         private void ChangeDirection(Position currentPosition)
@@ -212,7 +268,6 @@ namespace MintApp
 
         private bool Move(ref Position currentPosition)
         {
-            string directionSymbol;
             Position newPosition;
             switch (_currentDirection)
             {
@@ -224,13 +279,14 @@ namespace MintApp
                         var positionUp =GetNextPosition(Direction.Up, currentPosition);
                         if(IsLocationEmpty(positionUp))
                         {
+                            //see if left field has been already visited
                             if(PositionAlreadyVisited(GetNextPosition(Direction.Left, currentPosition)))
                             {
                                 currentPosition = positionUp;
-                                directionSymbol = "^";
-                                Console.Write(directionSymbol);
+
                                 _lastDirection = Direction.Left;
                                 _currentDirection = Direction.Up;
+                                _visitedPositions[_visitedPositions.Count - 1].SetDirectionChangedFlag();
                                 _visitedPositions.Add(new VisitedPosition(currentPosition, _currentDirection));
                                 return true;
                             }
@@ -239,20 +295,16 @@ namespace MintApp
                     } 
                     
                     newPosition = GetNextPosition(Direction.Left, currentPosition);                   
-                    directionSymbol = "<";
 
                     break;
                 case Direction.Right:
                     newPosition  = GetNextPosition(Direction.Right, currentPosition);
-                    directionSymbol = ">";
                     break;
                 case Direction.Up:
                     newPosition = GetNextPosition(Direction.Up, currentPosition);
-                    directionSymbol = "^";
                     break;
                 case Direction.Down:
                     newPosition = GetNextPosition(Direction.Down, currentPosition);
-                    directionSymbol = "v";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_currentDirection), _currentDirection, null);
@@ -265,8 +317,6 @@ namespace MintApp
             currentPosition = newPosition;
             _visitedPositions.Add(new VisitedPosition(currentPosition, _currentDirection));
             _lastDirection = _currentDirection;
-
-            Console.Write(directionSymbol);
 
             return true;
         }
