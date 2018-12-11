@@ -11,8 +11,8 @@ namespace MintApp
             string path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\maze.txt"));
 
             MintResolver resolver = new MintResolver(path);
-            //resolver.Print();
-            resolver.Resolve();
+            resolver.Print();
+            resolver.Resolve(new ConsoleOutput());
 
             Console.ReadLine();
         }
