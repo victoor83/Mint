@@ -12,7 +12,7 @@ namespace MintApp
 
             MintResolver resolver = new MintResolver(path);
             resolver.Print();
-            resolver.Resolve();
+            resolver.Resolve(new ConsoleOutput());
 
             Console.ReadLine();
         }
